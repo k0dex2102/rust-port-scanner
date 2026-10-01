@@ -20,10 +20,8 @@ pub fn scan(s_port: u32, e_port: u32, ip_addr: &String) -> Vec<String> {
                     Err(_) => {}
                 }
             }
-
             Err(e) => eprintln!("Invalid address: {e}"),
         }
     }
-
     results
 }
