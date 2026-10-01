@@ -1,10 +1,11 @@
-use {std::env::args};
+use {std::{env::args, time::Instant}};
 mod scan;
 
 fn main() {
     
-    // make args string vector
+    // make args string vector and setup runtime
     let args: Vec<String> = args().collect();
+    let start = Instant::now();
     
     // error checking if all parameters are provided
     if args.len() < 4 {
@@ -27,5 +28,15 @@ fn main() {
         return;
     }
 
-    scan::scan(s_port, e_port, ip_addr);
+    let results = scan::scan(s_port, e_port, ip_addr);
+
+    // save elapsed time into an duration var and print elapsed time for the scan
+    let duration = start.elapsed();
+    println!("Time: {:.2?}", duration);
+
+    // print the open ports
+    for result in results {
+        println!("{}", result);
+    }
+
 }
