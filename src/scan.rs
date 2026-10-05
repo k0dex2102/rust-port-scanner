@@ -3,25 +3,33 @@ use std::{
     time::Duration,
 };
 
-pub fn scan(s_port: u32, e_port: u32, ip_addr: &String) -> Vec<String> {
-    // make a list to save the open ports to
+use crate::service;
+
+pub fn scan(s_port: u32, e_port: u32, ip_addr: &str) -> Vec<String> {
     let mut results: Vec<String> = Vec::new();
 
     for port in s_port..=e_port {
         let addr = format!("{}:{}", ip_addr, port);
 
-        // parse the formatted address to a SocketAddr
         match addr.parse::<SocketAddr>() {
-            Ok(addr) => {
-                // connect to the IP address and check if the port is open
-                match TcpStream::connect_timeout(&addr, Duration::from_millis(500)) {
-                    // save the open ports to the list as formatted String
-                    Ok(_) => results.push(format!("[OPEN] {}", port)),
-                    Err(_) => {}
+            Ok(addr) => match TcpStream::connect_timeout(&addr, Duration::from_millis(500)) {
+                Ok(stream) => {
+                    let service = service::detect(stream, port);
+
+                    results.push(format!(
+                        "\x1b[32m[OPEN]\x1b[0m \x1b[36m{}\x1b[0m -> \x1b[33m{}\x1b[0m",
+                        port, service
+                    ));
                 }
+
+                Err(_) => {}
+            },
+
+            Err(e) => {
+                eprintln!("\x1b[31mInvalid address: {}\x1b[0m", e);
             }
-            Err(e) => eprintln!("Invalid address: {e}"),
         }
     }
+
     results
 }
