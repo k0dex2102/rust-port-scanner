@@ -1,100 +1,127 @@
-🦀 Rust Port Scanner
+# 🦀 Rust Port Scanner
 
-A lightweight port scanner written in Rust, designed to explore TCP port scanning and network diagnostics.
+A simple TCP port scanner written in Rust. I built this project to get more familiar with Rust networking and to experiment with how port scanning and basic service detection work.
 
-✨ Features
-⚡ Performance — Built with Rust for efficient execution.
-🌐 Network Scanning — Designed to check TCP ports on a target host.
-🎯 Port Targeting — Intended for scanning specific ports or port ranges.
-🛡️ Memory Safety — Benefits from Rust's memory-safe design.
-🔧 Open Source — Easy to explore, modify, and extend.
-Note: The exact feature set depends on the current implementation.
-📋 Requirements
-Rust
-Cargo (included with Rust)
-🚀 Installation
+The scanner checks a given IP address for open TCP ports within a specified range. When it finds an open port, it also tries to identify the service running behind it.
+
+## Features
+
+- **TCP port scanning** – Scan a custom range of ports on a target IP.
+- **Service detection** – Attempts to identify services such as SSH, FTP, SMTP and HTTP.
+- **HTTP information** – Reads the HTTP response and extracts the server header when available.
+- **Connection timeout** – Uses timeouts to avoid waiting indefinitely for unreachable ports.
+- **Scan duration** – Displays how long the scan took.
+- **Lightweight** – No external dependencies required.
+
+## Requirements
+
+- [Rust](https://www.rust-lang.org/tools/install)
+- Cargo (included with Rust)
+
+## Getting started
 
 Clone the repository:
 
+```bash
 git clone https://github.com/k0dex2102/rust-port-scanner.git
 cd rust-port-scanner
-
+```
 
 Build the project:
 
+```bash
 cargo build --release
+```
 
-💻 Usage
+## Usage
 
-Run the project using Cargo:
+The scanner expects three arguments:
 
-cargo run --release
+```text
+<start port> <end port> <IP address>
+```
 
+Run it with Cargo:
 
-For available commands and arguments, check the program's help output or source code.
+```bash
+cargo run --release -- 1 1024 127.0.0.1
+```
 
-Example
+Or execute the compiled binary directly:
 
-A typical port scanner can be used to check a target host for reachable TCP ports.
+```bash
+./target/release/port_scanner 1 1024 127.0.0.1
+```
 
-Example target: 127.0.0.1 (localhost).
+### Example output
 
-Only scan systems you own or have explicit permission to test.
+```text
+[OPEN] 22 -> SSH (SSH-2.0-OpenSSH)
+[OPEN] 80 -> HTTP (HTTP/1.1 200 OK)
+Time: 1.24s
+```
 
-🛠️ Development
+*Output depends on the target system and the services running on it.*
 
-Run the project in development mode:
+### Scan a specific range
 
-cargo run
+For example, to scan ports 20 through 1000 on a local machine:
 
+```bash
+cargo run --release -- 20 1000 127.0.0.1
+```
 
-Check the code for common issues:
+## How it works
 
-cargo check
+The scanner goes through the requested port range and attempts to establish a TCP connection to each port.
 
+If a connection succeeds, the port is reported as open. The scanner then tries to identify the service by reading its initial response or sending a basic HTTP request.
 
-Run the test suite:
+Currently, service detection covers common protocols such as SSH, FTP, SMTP and HTTP. Some ports may only be identified by their port number, while others are reported as unknown.
 
-cargo test
+## Project structure
 
-
-Format the source code:
-
-cargo fmt
-
-📁 Project Structure
+```text
 rust-port-scanner/
 ├── src/
-│   └── main.rs
+│   ├── main.rs
+│   ├── scan.rs
+│   └── service.rs
 ├── Cargo.toml
 ├── Cargo.lock
 └── README.md
+```
 
+## Development
 
-The structure above is an example and may differ from the actual repository.
+Check the project:
 
-🔒 Responsible Use
+```bash
+cargo check
+```
 
-This project is intended for educational purposes and authorized network diagnostics.
+Run tests:
 
-Only scan systems you own or have explicit permission to test.
-Respect network policies and applicable laws.
-Avoid scanning networks without authorization.
+```bash
+cargo test
+```
 
-The author is not responsible for misuse of this software.
+Format the code:
 
-🤝 Contributing
+```bash
+cargo fmt
+```
 
-Contributions, bug reports, and feature suggestions are welcome.
+## Responsible use
 
-Fork the repository.
-Create a feature branch.
-Make your changes.
-Submit a pull request.
-📄 License
+This tool is intended for learning, testing and authorized network diagnostics.
 
-See the LICENSE file for license information.
+Only scan systems and networks you own or have explicit permission to test. Unauthorized scanning may violate network policies or applicable laws.
 
-Built with 🦀 Rust
+## Contributing
 
-Repository
+Suggestions, bug reports and improvements are always welcome. Feel free to open an issue or submit a pull request.
+
+---
+
+Built with Rust 🦀
